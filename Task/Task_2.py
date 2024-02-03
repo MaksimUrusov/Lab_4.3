@@ -1,125 +1,109 @@
-#!/usr/bin/env python3
-# -*- coding: utf-8 -*-
-"""
-Создать абстрактный базовый класс Pair с виртуальными арифметическими операциями.
-Создать производные классы Money (деньги) и Fraction (дробное число).
-"""
+"""В следующих заданиях требуется реализовать абстрактный базовый класс, определив в нем
+абстрактные методы и свойства. Эти методы определяются в производных классах. В базовых
+классах должны быть объявлены абстрактные методы ввода/вывода, которые реализуются в
+производных классах.
+Вызывающая программа должна продемонстрировать все варианты вызова переопределенных
+абстрактных методов. Написать функцию вывода, получающую параметры базового класса по
+ссылке и демонстрирующую виртуальный вызов.
 
-
+Создать абстрактный базовый класс Figure с абстрактными методами вычисления площади
+и периметра. Создать производные классы: Rectanglе (прямоугольник), Circle (круг),
+Trapezium (трапеция) со своими функциями площади и периметра. Самостоятельно
+определить, какие поля необходимы, какие из них можно задать в базовом классе, а какие —
+в производных. Площадь трапеции:
+"""
 from abc import ABC, abstractmethod
+import math
 
-
-# Создаем абстрактный класс Pair
-class Pair(ABC):
+class Figure(ABC):
+    """
+    Абстрактный базовый класс для фигуры.
+    """
     @abstractmethod
-    def __add__(self, other):
+    def area(self):
+        """
+        Метод для вычисления площади.
+        """
         pass
 
     @abstractmethod
-    def __sub__(self, other):
+    def perimeter(self):
+        """
+        Метод для вычисления периметра.
+        """
         pass
 
     @abstractmethod
-    def __mul__(self, other):
+    def display(self):
+        """
+        Метод для вывода результатов на экран.
+        """
         pass
 
-    @abstractmethod
-    def __truediv__(self, other):
-        pass
+class Rectangle(Figure):
+    """
+    Класс прямоугольника, наследуется от Figure.
+    """
+    def __init__(self, length, width):
+        self.length = length
+        self.width = width
 
-    @abstractmethod
-    def __str__(self):
-        pass
+    def area(self):
+        return self.length * self.width
 
+    def perimeter(self):
+        return 2 * (self.length + self.width)
 
-# Создаем класс Money, который наследуется от Pair
-class Money(Pair):
-    def __init__(self, amount):
-        self.amount = amount
+    def display(self):
+        print(f"Прямоугольник со сторонами {self.length} и {self.width} имеет площадь {self.area()} и периметр {self.perimeter()}.")
 
-    # Переопределяем методы сложения, вычитания, умножения, деления и вывода для класса Money
-    def __add__(self, other):
-        if isinstance(other, Money):
-            return Money(self.amount + other.amount)
-        else:
-            raise TypeError("Unsupported operand type")
+class Circle(Figure):
+    """
+    Класс круга, наследуется от Figure.
+    """
+    def __init__(self, radius):
+        self.radius = radius
 
-    def __sub__(self, other):
-        if isinstance(other, Money):
-            return Money(self.amount - other.amount)
-        else:
-            raise TypeError("Unsupported operand type")
+    def area(self):
+        return math.pi * (self.radius ** 2)
 
-    def __mul__(self, other):
-        if isinstance(other, (int, float)):
-            return Money(self.amount * other)
-        else:
-            raise TypeError("Unsupported operand type")
+    def perimeter(self):
+        return 2 * math.pi * self.radius
 
-    def __truediv__(self, other):
-        if isinstance(other, (int, float)):
-            return Money(self.amount / other)
-        else:
-            raise TypeError("Unsupported operand type")
+    def display(self):
+        print(f"Круг с радиусом {self.radius} имеет площадь {self.area():.2f} и периметр {self.perimeter():.2f}.")
 
-    def __str__(self):
-        return str(self.amount)
+class Trapezium(Figure):
+    """
+    Класс трапеции, наследуется от Figure.
+    """
+    def __init__(self, a, b, c, d, height):
+        self.a = a
+        self.b = b
+        self.c = c
+        self.d = d
+        self.height = height
 
+    def area(self):
+        return ((self.a + self.b) / 2) * self.height
 
-# Создаем класс Fraction, который наследуется от Pair
-class Fraction(Pair):
-    def __init__(self, numerator, denominator):
-        self.numerator = numerator
-        self.denominator = denominator
+    def perimeter(self):
+        return self.a + self.b + self.c + self.d
 
-    # Переопределяем методы сложения, вычитания, умножения, деления и вывода для класса Fraction
-    def __add__(self, other):
-        if isinstance(other, Fraction):
-            common_denominator = self.denominator * other.denominator
-            new_numerator = (self.numerator * other.denominator) + (
-                other.numerator * self.denominator
-            )
-            return Fraction(new_numerator, common_denominator)
-        else:
-            raise TypeError("Unsupported operand type")
+    def display(self):
+        print(f"Трапеция со сторонами {self.a}, {self.b}, {self.c}, {self.d} и высотой {self.height} имеет площадь {self.area()} и периметр {self.perimeter()}.")
 
-    def __sub__(self, other):
-        if isinstance(other, Fraction):
-            common_denominator = self.denominator * other.denominator
-            new_numerator = (self.numerator * other.denominator) - (
-                other.numerator * self.denominator
-            )
-            return Fraction(new_numerator, common_denominator)
-        else:
-            raise TypeError("Unsupported operand type")
+def demonstrate_virtual_call(figure):
+    """
+    Функция для демонстрации использования классов фигур.
+    """
+    figure.display()
 
-    def __mul__(self, other):
-        if isinstance(other, (int, float)):
-            return Fraction(self.numerator * other, self.denominator)
-        else:
-            raise TypeError("Unsupported operand type")
-
-    def __truediv__(self, other):
-        if isinstance(other, (int, float)):
-            return Fraction(self.numerator, self.denominator * other)
-        else:
-            raise TypeError("Unsupported operand type")
-
-    def __str__(self):
-        return f"{self.numerator}/{self.denominator}"
-
-
-# Основной код программы
 if __name__ == "__main__":
-    money1 = Money(100)
-    money2 = Money(50)
-    print(money1 + money2)
-    print(money1 - money2)
-    print(money1 * 2)
-    print(money1 / 2)
-    fraction1 = Fraction(1, 2)
-    fraction2 = Fraction(3, 4)
-    print(fraction1 + fraction2)
-    print(fraction1 - fraction2)
-    print(fraction1 * 2)
-    print(fraction1 / 2)
+    rectangle = Rectangle(10, 20)
+    circle = Circle(5)
+    trapezium = Trapezium(3, 5, 4, 6, 4)
+
+    demonstrate_virtual_call(rectangle)
+    demonstrate_virtual_call(circle)
+    demonstrate_virtual_call(trapezium)
